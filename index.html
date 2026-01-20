@@ -15,17 +15,27 @@
     .controls{ display:grid; gap:10px; grid-template-columns:repeat(12,1fr); margin-bottom:14px; }
     .control{ grid-column:span 3; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px; }
     .control label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
-    .control select,.control input{ width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#fff; font-size:14px; }
+    .control select,.control input{
+      width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#fff;
+      font-size:14px;
+    }
     .actions{ grid-column:span 12; display:flex; gap:10px; flex-wrap:wrap; }
-    button{ padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; cursor:pointer; font-weight:600; }
+    button{
+      padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; cursor:pointer;
+      font-weight:600;
+    }
     button:hover{ background:#fafafa; }
     .kpis{ display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin:14px 0 18px; }
     .kpi{ border:1px solid var(--line); border-radius:12px; padding:12px; background:#fff; }
     .kpi .v{ font-size:20px; font-weight:800; }
     .kpi .t{ font-size:12px; color:var(--muted); margin-top:4px; }
 
-    table{ width:100%; border-collapse:collapse; border:1px solid var(--line); border-radius:12px; overflow:hidden; margin-bottom:20px; }
-    thead th{ text-align:left; font-size:12px; color:var(--muted); background:var(--card); padding:10px; border-bottom:1px solid var(--line); cursor:pointer; user-select:none; }
+    table{ width:100%; border-collapse:collapse; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+    thead th{
+      text-align:left; font-size:12px; color:var(--muted); background:var(--card);
+      padding:10px; border-bottom:1px solid var(--line);
+      cursor:pointer; user-select:none;
+    }
     tbody td{ padding:10px; border-bottom:1px solid var(--line); vertical-align:top; font-size:14px; }
     tbody tr:hover{ background:#fafafa; }
     .tag{ display:inline-block; padding:3px 8px; border-radius:999px; font-size:12px; font-weight:700; border:1px solid var(--line); }
@@ -34,20 +44,16 @@
     .branco{ background:#fff7e6; border-color:#ffdca3; }
     .anulado{ background:#eef2ff; border-color:#c7d2fe; }
 
-    .perc-alta { color:#006400; font-weight:bold; }
-    .perc-media { color:#d2691e; font-weight:bold; }
-    .perc-baixa { color:#b22222; font-weight:bold; }
-
     .small{ font-size:12px; color:var(--muted); }
-    .tabs { display:flex; border-bottom:1px solid var(--line); margin-bottom:16px; }
-    .tab { padding:10px 20px; cursor:pointer; font-weight:600; color:var(--muted); }
-    .tab.active { color:var(--fg); border-bottom:3px solid #0066cc; }
-    .page { display:none; }
-    .page.active { display:block; }
-
     footer{ padding:16px; color:var(--muted); font-size:12px; }
-    @media (max-width: 980px){ .control{ grid-column:span 6; } .kpis{ grid-template-columns:repeat(3,1fr); } }
-    @media (max-width: 560px){ .control{ grid-column:span 12; } .kpis{ grid-template-columns:repeat(2,1fr); } }
+    @media (max-width: 980px){
+      .control{ grid-column:span 6; }
+      .kpis{ grid-template-columns:repeat(3,1fr); }
+    }
+    @media (max-width: 560px){
+      .control{ grid-column:span 12; }
+      .kpis{ grid-template-columns:repeat(2,1fr); }
+    }
   </style>
 </head>
 <body>
@@ -59,207 +65,367 @@
   </header>
 
   <main class="wrap">
-    <div class="tabs">
-      <div id="tabItens" class="tab active" role="tab" aria-selected="true">Itens</div>
-      <div id="tabRanking" class="tab" role="tab" aria-selected="false">Ranking por Matéria</div>
-    </div>
+    <section class="controls">
+      <div class="control">
+        <label for="fMateria">Matéria</label>
+        <select id="fMateria"></select>
+      </div>
+      <div class="control">
+        <label for="fAssunto">Assunto</label>
+        <select id="fAssunto"></select>
+      </div>
+      <div class="control">
+        <label for="fResultado">Resultado</label>
+        <select id="fResultado">
+          <option value="">Todos</option>
+          <option value="certo">certo</option>
+          <option value="errado">errado</option>
+          <option value="branco">branco</option>
+          <option value="anulado">anulado</option>
+        </select>
+      </div>
+      <div class="control">
+        <label for="qSearch">Busca (nº, matéria, assunto)</label>
+        <input id="qSearch" placeholder="ex.: Linux, 98, Direitos Humanos..." />
+      </div>
 
-    <section id="pageItens" class="page active">
-      <section class="controls">
-        <div class="control">
-          <label for="fMateria">Matéria</label>
-          <select id="fMateria"></select>
-        </div>
-        <div class="control">
-          <label for="fAssunto">Assunto</label>
-          <select id="fAssunto"></select>
-        </div>
-        <div class="control">
-          <label for="fResultado">Resultado</label>
-          <select id="fResultado">
-            <option value="">Todos</option>
-            <option value="certo">certo</option>
-            <option value="errado">errado</option>
-            <option value="branco">branco</option>
-            <option value="anulado">anulado</option>
-          </select>
-        </div>
-        <div class="control">
-          <label for="qSearch">Busca (nº, matéria, assunto)</label>
-          <input id="qSearch" placeholder="ex.: Linux, 98, Direitos Humanos..." />
-        </div>
-
-        <div class="actions">
-          <button id="btnReset" type="button">Limpar filtros</button>
-          <button id="btnExport" type="button">Exportar CSV (itens filtrados)</button>
-        </div>
-      </section>
-
-      <section class="kpis" id="kpis"></section>
-
-      <section>
-        <div class="small" id="hintSort">Clique no cabeçalho para ordenar (alternando asc/desc).</div>
-        <table id="tbl">
-          <thead>
-            <tr>
-              <th data-key="q">Q</th>
-              <th data-key="materia">Matéria</th>
-              <th data-key="assunto">Assunto</th>
-              <th data-key="resultado">Resultado</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </section>
+      <div class="actions">
+        <button id="btnReset" type="button">Limpar filtros</button>
+        <button id="btnExport" type="button">Exportar CSV (itens filtrados)</button>
+      </div>
     </section>
 
-    <section id="pageRanking" class="page">
-      <h2>Ranking por Matéria (geral – sem filtros)</h2>
-      <p>Ordenado por acurácia sobre questões respondidas (acertos ÷ (acertos + erros)).</p>
-      <table id="rankingTable">
+    <section class="kpis" id="kpis"></section>
+
+    <section>
+      <div class="small" id="hintSort">Clique no cabeçalho para ordenar (alternando asc/desc).</div>
+      <table id="tbl">
         <thead>
           <tr>
-            <th>Matéria</th>
-            <th>Acertos</th>
-            <th>Erros</th>
-            <th>Brancos</th>
-            <th>Anulados</th>
-            <th>Respondidas</th>
-            <th>Acurácia respondidas</th>
-            <th>Aproveitamento válido</th>
-            <th>Total</th>
+            <th data-key="q">Q</th>
+            <th data-key="materia">Matéria</th>
+            <th data-key="assunto">Assunto</th>
+            <th data-key="resultado">Resultado</th>
           </tr>
         </thead>
-        <tbody id="rankingBody"></tbody>
+        <tbody id="tbody"></tbody>
       </table>
     </section>
   </main>
 
   <footer class="wrap">
-    Dica: publique este arquivo como <b>index.html</b> no GitHub Pages.
+    Dica: publique este arquivo como <b>index.html</b> no GitHub Pages (Settings → Pages → Deploy from branch).
   </footer>
 
   <script>
-    // ======= DADOS =======
-    const data = [ /* ... seu array de 120 itens completo aqui ... */ 
-      // (cole aqui o array data completo que você já tem – omiti por brevidade)
-      // Exemplo: {q:1, materia:"Português", assunto:"Interpretação de texto", resultado:"certo"}, ...
+    // ======= DADOS (120 itens) =======
+    // Resultado: "certo" | "errado" | "branco" | "anulado"
+    // Obs.: este dataset segue a tabela que montamos anteriormente.
+    const data = [
+      {q:1, materia:"Português", assunto:"Interpretação de texto", resultado:"certo"},
+      {q:2, materia:"Português", assunto:"Interpretação de texto", resultado:"certo"},
+      {q:3, materia:"Português", assunto:"Interpretação de texto", resultado:"errado"},
+      {q:4, materia:"Português", assunto:"Interpretação de texto", resultado:"errado"},
+      {q:5, materia:"Português", assunto:"Interpretação de texto", resultado:"certo"},
+      {q:6, materia:"Português", assunto:"Coesão textual", resultado:"certo"},
+      {q:7, materia:"Português", assunto:"Pontuação", resultado:"certo"},
+      {q:8, materia:"Português", assunto:"Regência verbal", resultado:"errado"},
+      {q:9, materia:"Redação Oficial", assunto:"Fechos oficiais", resultado:"certo"},
+      {q:10, materia:"Redação Oficial", assunto:"Exposição de motivos", resultado:"certo"},
+      {q:11, materia:"Redação Oficial", assunto:"Cabeçalho em expedientes", resultado:"errado"},
+      {q:12, materia:"Redação Oficial", assunto:"Padrão oficial de linguagem", resultado:"errado"},
+      {q:13, materia:"Windows/Excel", assunto:"Sistema de arquivos (Windows)", resultado:"certo"},
+      {q:14, materia:"Windows/Excel", assunto:"Auditoria de fórmulas (Excel)", resultado:"certo"},
+      {q:15, materia:"Seg. da Informação / Dados", assunto:"Data mining (clustering)", resultado:"branco"},
+      {q:16, materia:"Seg. da Informação / Dados", assunto:"Big Data (5Vs)", resultado:"branco"},
+      {q:17, materia:"Seg. da Informação / Dados", assunto:"Firewall e antivírus", resultado:"certo"},
+      {q:18, materia:"Seg. da Informação / Dados", assunto:"Zero-day", resultado:"anulado"},
+      {q:19, materia:"Bancos de Dados", assunto:"Normalização", resultado:"anulado"},
+      {q:20, materia:"Bancos de Dados", assunto:"Cardinalidade", resultado:"branco"},
+      {q:21, materia:"Adm. Pública", assunto:"Autarquias", resultado:"certo"},
+      {q:22, materia:"Adm. Pública", assunto:"Descentralização", resultado:"errado"},
+      {q:23, materia:"Licitações", assunto:"Sistema de registro de preços (SRP)", resultado:"branco"},
+      {q:24, materia:"Licitações", assunto:"Inexigibilidade", resultado:"certo"},
+      {q:25, materia:"Constitucional", assunto:"Segurança pública", resultado:"certo"},
+      {q:26, materia:"Constitucional", assunto:"Partidos políticos", resultado:"errado"},
+      {q:27, materia:"Constitucional", assunto:"Direito à vida / pena de morte", resultado:"certo"},
+      {q:28, materia:"Constitucional", assunto:"Presidencialismo", resultado:"certo"},
+      {q:29, materia:"Direito Penal", assunto:"Lugar do crime (ubiquidade)", resultado:"certo"},
+      {q:30, materia:"Direito Penal", assunto:"Tempo do crime (teoria da atividade)", resultado:"certo"},
+      {q:31, materia:"Inquérito", assunto:"Diligências / perícia", resultado:"anulado"},
+      {q:32, materia:"Processo Penal", assunto:"Assistente técnico e acesso ao material", resultado:"certo"},
+      {q:33, materia:"Processo Penal", assunto:"Busca domiciliar com consentimento", resultado:"certo"},
+      {q:34, materia:"Criminalística", assunto:"Cadeia de custódia (início)", resultado:"certo"},
+      {q:35, materia:"Criminalística", assunto:"Vestígios morfológicos", resultado:"errado"},
+      {q:36, materia:"Criminalística", assunto:"Princípio de Locard", resultado:"certo"},
+      {q:37, materia:"Perícia", assunto:"Imagem raster e pixelização", resultado:"certo"},
+      {q:38, materia:"Balística", assunto:"Efeitos secundários (tiro encostado)", resultado:"anulado"},
+      {q:39, materia:"Perícia", assunto:"Isolamento do local", resultado:"certo"},
+      {q:40, materia:"Direitos Humanos", assunto:"Refugiados (trabalho/profissões)", resultado:"certo"},
+      {q:41, materia:"Direitos Humanos", assunto:"Regras mínimas ONU (pessoas presas)", resultado:"certo"},
+      {q:42, materia:"Direitos Humanos", assunto:"Tratados de DH (status supralegal)", resultado:"certo"},
+      {q:43, materia:"Direitos Humanos", assunto:"CEDAW (nacionalidade)", resultado:"certo"},
+      {q:44, materia:"Direitos Humanos", assunto:"Duplo grau (CADH)", resultado:"certo"},
+      {q:45, materia:"Direitos Humanos", assunto:"Subsidiariedade (sistema interamericano)", resultado:"certo"},
+      {q:46, materia:"Lógica", assunto:"Cobertura por câmeras (contagem)", resultado:"certo"},
+      {q:47, materia:"Lógica", assunto:"Inferência condicional", resultado:"errado"},
+      {q:48, materia:"Lógica", assunto:"Contradição / proposição", resultado:"errado"},
+      {q:49, materia:"Lógica", assunto:"Equivalência lógica", resultado:"errado"},
+      {q:50, materia:"Lógica", assunto:"Implicação (negação/alternativa)", resultado:"certo"},
+
+      {q:51, materia:"Arquitetura / Virtualização", assunto:"Paravirtualização", resultado:"branco"},
+      {q:52, materia:"Arquitetura / Virtualização", assunto:"Memória flash (volatilidade)", resultado:"errado"},
+      {q:53, materia:"Arquitetura / Virtualização", assunto:"Paginação (páginas/frames)", resultado:"branco"},
+      {q:54, materia:"Sistemas de Arquivos", assunto:"Journaling (Ext4/ReiserFS)", resultado:"branco"},
+      {q:55, materia:"RAID/NTFS", assunto:"Bad clusters / estruturas", resultado:"errado"},
+      {q:56, materia:"RAID/NTFS", assunto:"RAID 0 (striping)", resultado:"errado"},
+      {q:57, materia:"Bancos de Dados", assunto:"Agregação multidimensional (OLAP)", resultado:"branco"},
+      {q:58, materia:"Bancos de Dados", assunto:"Modelo lógico relacional", resultado:"certo"},
+      {q:59, materia:"Bancos de Dados", assunto:"SQLite (usuários/permissões)", resultado:"certo"},
+      {q:60, materia:"Bancos de Dados", assunto:"Recuperação pós-falha / checkpoint", resultado:"errado"},
+      {q:61, materia:"Bancos de Dados", assunto:"SQL (outer joins)", resultado:"errado"},
+      {q:62, materia:"NoSQL", assunto:"Escalabilidade horizontal", resultado:"certo"},
+      {q:63, materia:"NoSQL", assunto:"ACID em distribuído", resultado:"certo"},
+      {q:64, materia:"NoSQL", assunto:"Banco de grafos", resultado:"branco"},
+      {q:65, materia:"Engenharia Reversa", assunto:"Control flow flattening", resultado:"certo"},
+      {q:66, materia:"Engenharia Reversa", assunto:"ISA extension / suporte de descompilador", resultado:"branco"},
+      {q:67, materia:"Malware", assunto:"Sandbox (conceito)", resultado:"certo"},
+      {q:68, materia:"Malware", assunto:"Análise estática vs dinâmica", resultado:"errado"},
+      {q:69, materia:"Programação (POO/Procedural)", assunto:"Tipos (int/char) e struct", resultado:"branco"},
+      {q:70, materia:"Programação (POO/Procedural)", assunto:"Herança múltipla (Java/C#)", resultado:"errado"},
+      {q:71, materia:"Programação (POO/Procedural)", assunto:"Arrays (tipos homogêneos)", resultado:"errado"},
+      {q:72, materia:"Java", assunto:"Bytecode/JVM (portabilidade)", resultado:"certo"},
+      {q:73, materia:"JavaScript", assunto:"Execução no navegador", resultado:"certo"},
+      {q:74, materia:"Web/APIs", assunto:"GraphQL (consultas)", resultado:"errado"},
+      {q:75, materia:"Web/APIs", assunto:"REST stateless", resultado:"errado"},
+      {q:76, materia:"Estruturas de Dados", assunto:"Pilha (recursão)", resultado:"certo"},
+      {q:77, materia:"SonarQube", assunto:"Quality Gate", resultado:"certo"},
+      {q:78, materia:"Algoritmos", assunto:"Complexidade O(n) vs O(n log n)", resultado:"certo"},
+      {q:79, materia:"Redes", assunto:"HTTPS no modelo TCP/IP", resultado:"errado"},
+      {q:80, materia:"Redes", assunto:"SSHv2 (sessões)", resultado:"anulado"},
+      {q:81, materia:"OWASP", assunto:"Comentário SQL (--)", resultado:"errado"},
+      {q:82, materia:"OWASP", assunto:"SQLi (interpretação da query)", resultado:"certo"},
+      {q:83, materia:"OAuth/OIDC", assunto:"OIDC sobre OAuth 2.0", resultado:"errado"},
+      {q:84, materia:"OAuth/OIDC", assunto:"OAuth expõe senha?", resultado:"certo"},
+      {q:85, materia:"Esteganografia", assunto:"Uso em forense / assinatura digital", resultado:"certo"},
+      {q:86, materia:"Esteganografia", assunto:"LSB", resultado:"certo"},
+      {q:87, materia:"Redes", assunto:"NAT e DHCP", resultado:"errado"},
+      {q:88, materia:"Redes", assunto:"NAT (tradução/estado)", resultado:"certo"},
+      {q:89, materia:"DNSSEC", assunto:"KSK assina ZSK", resultado:"branco"},
+      {q:90, materia:"DNSSEC", assunto:"ZSK assina registros", resultado:"certo"},
+      {q:91, materia:"WPA3", assunto:"SAE (resistência a dicionário)", resultado:"errado"},
+      {q:92, materia:"WPA3", assunto:"OWE (uso)", resultado:"errado"},
+      {q:93, materia:"Criptografia", assunto:"Diffie-Hellman e MITM", resultado:"certo"},
+      {q:94, materia:"Criptografia", assunto:"Twofish (Feistel/rodadas)", resultado:"branco"},
+      {q:95, materia:"Windows Server 2022", assunto:"DoH (DNS-over-HTTPS)", resultado:"certo"},
+      {q:96, materia:"Windows Server 2022", assunto:"Secured-core server", resultado:"branco"},
+      {q:97, materia:"Linux", assunto:"Logs (/var/log/dmesg)", resultado:"errado"},
+      {q:98, materia:"Linux", assunto:"Permissões (chmod)", resultado:"branco"},
+      {q:99, materia:"Linux", assunto:"systemd/journalctl", resultado:"branco"},
+      {q:100, materia:"Android", assunto:"UID e sandbox", resultado:"certo"},
+      {q:101, materia:"iOS", assunto:"ASLR", resultado:"certo"},
+      {q:102, materia:"Governança / Licitações", assunto:"Lei 14.133 (hipótese de contratação)", resultado:"errado"},
+      {q:103, materia:"Marco Civil", assunto:"Responsabilização do provedor", resultado:"errado"},
+      {q:104, materia:"IA", assunto:"Deepfakes/GAN", resultado:"errado"},
+      {q:105, materia:"IA", assunto:"LLM (definição)", resultado:"certo"},
+      {q:106, materia:"Forense (incidente)", assunto:"Criptografia ponta a ponta", resultado:"certo"},
+      {q:107, materia:"Forense (incidente)", assunto:"Coleta e isolamento", resultado:"certo"},
+      {q:108, materia:"Forense (incidente)", assunto:"Cadeia de custódia (visualização)", resultado:"certo"},
+      {q:109, materia:"Forense (incidente)", assunto:"Metadados e logs", resultado:"certo"},
+      {q:110, materia:"Forense (nuvem)", assunto:"Impressão (rastros)", resultado:"certo"},
+      {q:111, materia:"Forense (nuvem)", assunto:"Arquivos de configuração", resultado:"certo"},
+      {q:112, materia:"Forense (nuvem)", assunto:"Acordos/legislação", resultado:"certo"},
+      {q:113, materia:"Forense (nuvem)", assunto:"Autorização judicial", resultado:"certo"},
+      {q:114, materia:"Forense (mobile)", assunto:"Caches/histórico", resultado:"certo"},
+      {q:115, materia:"Forense (mobile)", assunto:"EXIF", resultado:"branco"},
+      {q:116, materia:"Forense (mobile)", assunto:"Versão do SO", resultado:"certo"},
+      {q:117, materia:"Forense (VMs/Ransomware)", assunto:"Vestígios (tarefas/registro)", resultado:"certo"},
+      {q:118, materia:"Forense (VMs/Ransomware)", assunto:"Proporcionalidade", resultado:"certo"},
+      {q:119, materia:"Forense (VMs/Ransomware)", assunto:"Hash na duplicação", resultado:"certo"},
+      {q:120, materia:"Forense (VMs/Ransomware)", assunto:"Logs/snapshots/.vmdk", resultado:"certo"},
     ];
 
-    // ======= ESTADO =======
+    // ======= ESTADO (ordenacao) =======
     let sortKey = "q";
-    let sortDir = "asc";
+    let sortDir = "asc"; // "asc" | "desc"
 
     // ======= HELPERS =======
     const uniq = (arr) => [...new Set(arr)].sort((a,b)=>a.localeCompare(b,"pt-BR"));
     const tagClass = (r) => (r === "certo" ? "certo" : r === "errado" ? "errado" : r === "branco" ? "branco" : "anulado");
 
-    function escapeHtml(s){
-      return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    function computeStats(rows){
+      const stats = { total: rows.length, certo:0, errado:0, branco:0, anulado:0, validos:0, respondidos:0 };
+      for(const r of rows){
+        stats[r.resultado] = (stats[r.resultado]||0) + 1;
+      }
+      stats.validos = stats.total - stats.anulado;
+      stats.respondidos = stats.validos - stats.branco; // branco não respondido
+      stats.acuracia = stats.respondidos > 0 ? (stats.certo / stats.respondidos) * 100 : 0;
+      stats.aproveitamento = stats.validos > 0 ? (stats.certo / stats.validos) * 100 : 0;
+      return stats;
     }
 
+    function renderKpis(rows){
+      const s = computeStats(rows);
+      const el = document.getElementById("kpis");
+      el.innerHTML = `
+        <div class="kpi"><div class="v">${s.total}</div><div class="t">Itens (filtrados)</div></div>
+        <div class="kpi"><div class="v">${s.validos}</div><div class="t">Válidos (sem anulado)</div></div>
+        <div class="kpi"><div class="v">${s.certo}</div><div class="t">Acertos</div></div>
+        <div class="kpi"><div class="v">${s.errado}</div><div class="t">Erros</div></div>
+        <div class="kpi"><div class="v">${s.branco}</div><div class="t">Brancos</div></div>
+        <div class="kpi"><div class="v">${s.acuracia.toFixed(2)}%</div><div class="t">Acurácia (sobre respondidos)</div></div>
+      `;
+    }
+
+    function populateFilters(){
+      const materias = uniq(data.map(d=>d.materia));
+      const fMateria = document.getElementById("fMateria");
+      fMateria.innerHTML = `<option value="">Todas</option>` + materias.map(m=>`<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join("");
+
+      // assunto depende de matéria; inicia com todos
+      updateAssuntoOptions();
+    }
+
+    function updateAssuntoOptions(){
+      const fMateriaVal = document.getElementById("fMateria").value;
+      const base = fMateriaVal ? data.filter(d=>d.materia === fMateriaVal) : data;
+      const assuntos = uniq(base.map(d=>d.assunto));
+      const fAssunto = document.getElementById("fAssunto");
+      const current = fAssunto.value || "";
+      fAssunto.innerHTML = `<option value="">Todos</option>` + assuntos.map(a=>`<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join("");
+      // tenta manter seleção se ainda existir
+      if (assuntos.includes(current)) fAssunto.value = current;
+    }
+
+    function getFiltered(){
+      const m = document.getElementById("fMateria").value;
+      const a = document.getElementById("fAssunto").value;
+      const r = document.getElementById("fResultado").value;
+      const q = document.getElementById("qSearch").value.trim().toLowerCase();
+
+      let rows = data.slice();
+
+      if (m) rows = rows.filter(d=>d.materia === m);
+      if (a) rows = rows.filter(d=>d.assunto === a);
+      if (r) rows = rows.filter(d=>d.resultado === r);
+
+      if (q){
+        rows = rows.filter(d=>{
+          const hay = `${d.q} ${d.materia} ${d.assunto} ${d.resultado}`.toLowerCase();
+          return hay.includes(q);
+        });
+      }
+
+      // ordenar
+      rows.sort((x,y)=>{
+        const vx = x[sortKey];
+        const vy = y[sortKey];
+        let cmp = 0;
+        if (typeof vx === "number" && typeof vy === "number") cmp = vx - vy;
+        else cmp = String(vx).localeCompare(String(vy),"pt-BR");
+        return sortDir === "asc" ? cmp : -cmp;
+      });
+
+      return rows;
+    }
+
+    function renderTable(rows){
+      const tbody = document.getElementById("tbody");
+      tbody.innerHTML = rows.map(d=>`
+        <tr>
+          <td><b>${d.q}</b></td>
+          <td>${escapeHtml(d.materia)}</td>
+          <td>${escapeHtml(d.assunto)}</td>
+          <td><span class="tag ${tagClass(d.resultado)}">${d.resultado}</span></td>
+        </tr>
+      `).join("");
+    }
+
+    function resetFilters(){
+      document.getElementById("fMateria").value = "";
+      document.getElementById("fResultado").value = "";
+      document.getElementById("qSearch").value = "";
+      updateAssuntoOptions();
+      document.getElementById("fAssunto").value = "";
+      refresh();
+    }
+
+    function refresh(){
+      const rows = getFiltered();
+      renderKpis(rows);
+      renderTable(rows);
+    }
+
+    // ======= EXPORT CSV =======
+    function toCsv(rows){
+      const header = ["questao","materia","assunto","resultado"];
+      const lines = [header.join(",")];
+      for(const d of rows){
+        lines.push([
+          d.q,
+          csvEscape(d.materia),
+          csvEscape(d.assunto),
+          d.resultado
+        ].join(","));
+      }
+      return lines.join("\n");
+    }
+
+    function downloadText(filename, content, mime="text/plain;charset=utf-8"){
+      const blob = new Blob([content], {type:mime});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportCsv(){
+      const rows = getFiltered();
+      const csv = toCsv(rows);
+      const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,"-");
+      downloadText(`relatorio-itens-${stamp}.csv`, csv, "text/csv;charset=utf-8");
+    }
+
+    // ======= SEGURANÇA BÁSICA (escape) =======
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
     function csvEscape(s){
       const v = String(s);
       if (/[,"\n]/.test(v)) return `"${v.replaceAll('"','""')}"`;
       return v;
     }
 
-    function computeStats(rows){
-      const stats = { total: rows.length, certo:0, errado:0, branco:0, anulado:0 };
-      for(const r of rows){
-        stats[r.resultado] = (stats[r.resultado]||0) + 1;
-      }
-      stats.validos = stats.total - stats.anulado;
-      stats.respondidos = stats.validos - stats.branco;
-      stats.acuracia = stats.respondidos > 0 ? (stats.certo / stats.respondidos) * 100 : 0;
-      stats.aproveitamento = stats.validos > 0 ? (stats.certo / stats.validos) * 100 : 0;
-      return stats;
-    }
-
-    // ======= RANKING POR MATÉRIA =======
-    function computeRanking(){
-      const matStats = {};
-      data.forEach(d => {
-        const m = d.materia;
-        if (!matStats[m]) {
-          matStats[m] = {certo:0, errado:0, branco:0, anulado:0, total:0};
-        }
-        matStats[m][d.resultado]++;
-        matStats[m].total++;
-      });
-
-      const ranking = Object.entries(matStats).map(([materia, s]) => {
-        const valido = s.total - s.anulado;
-        const respondidas = valido - s.branco;
-        const acuraciaResp = respondidas > 0 ? (s.certo / respondidas) * 100 : 0;
-        const aproveitVal = valido > 0 ? (s.certo / valido) * 100 : 0;
-
-        return {
-          materia,
-          certo: s.certo,
-          errado: s.errado,
-          branco: s.branco,
-          anulado: s.anulado,
-          respondidas,
-          valido,
-          acuraciaResp: acuraciaResp.toFixed(1),
-          aproveitVal: aproveitVal.toFixed(1),
-          total: s.total
-        };
-      });
-
-      ranking.sort((a,b) => b.acuraciaResp - a.acuraciaResp);
-      return ranking;
-    }
-
-    function renderRanking(){
-      const ranking = computeRanking();
-      const tbody = document.getElementById("rankingBody");
-      tbody.innerHTML = ranking.map(r => {
-        let classResp = r.acuraciaResp >= 70 ? "perc-alta" : r.acuraciaResp >= 40 ? "perc-media" : "perc-baixa";
-        let classVal  = r.aproveitVal  >= 70 ? "perc-alta" : r.aproveitVal  >= 40 ? "perc-media" : "perc-baixa";
-
-        return `
-          <tr>
-            <td>${escapeHtml(r.materia)}</td>
-            <td>${r.certo}</td>
-            <td>${r.errado}</td>
-            <td>${r.branco}</td>
-            <td>${r.anulado}</td>
-            <td>${r.respondidas}</td>
-            <td class="${classResp}">${r.acuraciaResp}%</td>
-            <td class="${classVal}">${r.aproveitVal}%</td>
-            <td>${r.total}</td>
-          </tr>
-        `;
-      }).join("");
-    }
-
-    // ======= FUNÇÕES EXISTENTES (mantidas iguais) =======
-    function populateFilters(){ /* ... seu código original ... */ }
-    function updateAssuntoOptions(){ /* ... seu código original ... */ }
-    function getFiltered(){ /* ... seu código original ... */ }
-    function renderTable(rows){ /* ... seu código original ... */ }
-    function renderKpis(rows){ /* ... seu código original ... */ }
-    function refresh(){ /* ... seu código original ... */ }
-    function resetFilters(){ /* ... seu código original ... */ }
-    function toCsv(rows){ /* ... seu código original ... */ }
-    function downloadText(filename, content, mime){ /* ... seu código original ... */ }
-    function exportCsv(){ /* ... seu código original ... */ }
-    function showPage(which){ /* ... seu código original ... */ }
-
     // ======= EVENTOS =======
     populateFilters();
-    document.getElementById("fMateria").addEventListener("change", () => { updateAssuntoOptions(); refresh(); });
+
+    document.getElementById("fMateria").addEventListener("change", () => {
+      updateAssuntoOptions();
+      // se matéria mudou, não força reset de assunto, só re-filtra
+      refresh();
+    });
     document.getElementById("fAssunto").addEventListener("change", refresh);
     document.getElementById("fResultado").addEventListener("change", refresh);
     document.getElementById("qSearch").addEventListener("input", () => {
+      // debounce simples
       window.clearTimeout(window.__t);
       window.__t = window.setTimeout(refresh, 120);
     });
+
     document.getElementById("btnReset").addEventListener("click", resetFilters);
     document.getElementById("btnExport").addEventListener("click", exportCsv);
 
+    // Ordenação por cabeçalho
     document.querySelectorAll("thead th[data-key]").forEach(th=>{
       th.addEventListener("click", ()=>{
         const key = th.getAttribute("data-key");
@@ -269,12 +435,8 @@
       });
     });
 
-    document.getElementById("tabItens").addEventListener("click", ()=>showPage("itens"));
-    document.getElementById("tabRanking").addEventListener("click", ()=>showPage("ranking"));
-
-    // Renderiza ranking na primeira carga e ao trocar aba
-    renderRanking();
-    refresh();  // inicia na aba Itens
+    // Primeira renderização
+    refresh();
   </script>
 </body>
 </html>
