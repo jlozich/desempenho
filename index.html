@@ -45,6 +45,12 @@
     .anulado{ background:#eef2ff; border-color:#c7d2fe; }
 
     .small{ font-size:12px; color:var(--muted); }
+    .tabs { display:flex; border-bottom:1px solid var(--line); margin-bottom:16px; }
+    .tab { padding:10px 20px; cursor:pointer; font-weight:600; color:var(--muted); }
+    .tab.active { color:var(--fg); border-bottom:3px solid #0066cc; }
+    .page { display:none; }
+    .page.active { display:block; }
+
     footer{ padding:16px; color:var(--muted); font-size:12px; }
     @media (max-width: 980px){
       .control{ grid-column:span 6; }
@@ -65,51 +71,64 @@
   </header>
 
   <main class="wrap">
-    <section class="controls">
-      <div class="control">
-        <label for="fMateria">Matéria</label>
-        <select id="fMateria"></select>
-      </div>
-      <div class="control">
-        <label for="fAssunto">Assunto</label>
-        <select id="fAssunto"></select>
-      </div>
-      <div class="control">
-        <label for="fResultado">Resultado</label>
-        <select id="fResultado">
-          <option value="">Todos</option>
-          <option value="certo">certo</option>
-          <option value="errado">errado</option>
-          <option value="branco">branco</option>
-          <option value="anulado">anulado</option>
-        </select>
-      </div>
-      <div class="control">
-        <label for="qSearch">Busca (nº, matéria, assunto)</label>
-        <input id="qSearch" placeholder="ex.: Linux, 98, Direitos Humanos..." />
-      </div>
+    <div class="tabs">
+      <div id="tabItens" class="tab active" role="tab" aria-selected="true">Itens</div>
+      <div id="tabRanking" class="tab" role="tab" aria-selected="false">Ranking</div>
+    </div>
 
-      <div class="actions">
-        <button id="btnReset" type="button">Limpar filtros</button>
-        <button id="btnExport" type="button">Exportar CSV (itens filtrados)</button>
-      </div>
+    <section id="pageItens" class="page active">
+      <section class="controls">
+        <div class="control">
+          <label for="fMateria">Matéria</label>
+          <select id="fMateria"></select>
+        </div>
+        <div class="control">
+          <label for="fAssunto">Assunto</label>
+          <select id="fAssunto"></select>
+        </div>
+        <div class="control">
+          <label for="fResultado">Resultado</label>
+          <select id="fResultado">
+            <option value="">Todos</option>
+            <option value="certo">certo</option>
+            <option value="errado">errado</option>
+            <option value="branco">branco</option>
+            <option value="anulado">anulado</option>
+          </select>
+        </div>
+        <div class="control">
+          <label for="qSearch">Busca (nº, matéria, assunto)</label>
+          <input id="qSearch" placeholder="ex.: Linux, 98, Direitos Humanos..." />
+        </div>
+
+        <div class="actions">
+          <button id="btnReset" type="button">Limpar filtros</button>
+          <button id="btnExport" type="button">Exportar CSV (itens filtrados)</button>
+        </div>
+      </section>
+
+      <section class="kpis" id="kpis"></section>
+
+      <section>
+        <div class="small" id="hintSort">Clique no cabeçalho para ordenar (alternando asc/desc).</div>
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th data-key="q">Q</th>
+              <th data-key="materia">Matéria</th>
+              <th data-key="assunto">Assunto</th>
+              <th data-key="resultado">Resultado</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </section>
     </section>
 
-    <section class="kpis" id="kpis"></section>
-
-    <section>
-      <div class="small" id="hintSort">Clique no cabeçalho para ordenar (alternando asc/desc).</div>
-      <table id="tbl">
-        <thead>
-          <tr>
-            <th data-key="q">Q</th>
-            <th data-key="materia">Matéria</th>
-            <th data-key="assunto">Assunto</th>
-            <th data-key="resultado">Resultado</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
+    <section id="pageRanking" class="page">
+      <h2>Ranking (em desenvolvimento)</h2>
+      <p>Aqui você pode implementar futuramente um ranking por matéria, acerto %, etc.</p>
+      <!-- Se quiser, adicione gráficos com Chart.js ou tabela de ranking aqui -->
     </section>
   </main>
 
@@ -119,8 +138,6 @@
 
   <script>
     // ======= DADOS (120 itens) =======
-    // Resultado: "certo" | "errado" | "branco" | "anulado"
-    // Obs.: este dataset segue a tabela que montamos anteriormente.
     const data = [
       {q:1, materia:"Português", assunto:"Interpretação de texto", resultado:"certo"},
       {q:2, materia:"Português", assunto:"Interpretação de texto", resultado:"certo"},
@@ -172,7 +189,6 @@
       {q:48, materia:"Lógica", assunto:"Contradição / proposição", resultado:"errado"},
       {q:49, materia:"Lógica", assunto:"Equivalência lógica", resultado:"errado"},
       {q:50, materia:"Lógica", assunto:"Implicação (negação/alternativa)", resultado:"certo"},
-
       {q:51, materia:"Arquitetura / Virtualização", assunto:"Paravirtualização", resultado:"branco"},
       {q:52, materia:"Arquitetura / Virtualização", assunto:"Memória flash (volatilidade)", resultado:"errado"},
       {q:53, materia:"Arquitetura / Virtualização", assunto:"Paginação (páginas/frames)", resultado:"branco"},
@@ -245,7 +261,7 @@
       {q:120, materia:"Forense (VMs/Ransomware)", assunto:"Logs/snapshots/.vmdk", resultado:"certo"},
     ];
 
-    // ======= ESTADO (ordenacao) =======
+    // ======= ESTADO =======
     let sortKey = "q";
     let sortDir = "asc"; // "asc" | "desc"
 
@@ -253,37 +269,38 @@
     const uniq = (arr) => [...new Set(arr)].sort((a,b)=>a.localeCompare(b,"pt-BR"));
     const tagClass = (r) => (r === "certo" ? "certo" : r === "errado" ? "errado" : r === "branco" ? "branco" : "anulado");
 
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function csvEscape(s){
+      const v = String(s);
+      if (/[,"\n]/.test(v)) return `"${v.replaceAll('"','""')}"`;
+      return v;
+    }
+
     function computeStats(rows){
       const stats = { total: rows.length, certo:0, errado:0, branco:0, anulado:0, validos:0, respondidos:0 };
       for(const r of rows){
         stats[r.resultado] = (stats[r.resultado]||0) + 1;
       }
       stats.validos = stats.total - stats.anulado;
-      stats.respondidos = stats.validos - stats.branco; // branco não respondido
+      stats.respondidos = stats.validos - stats.branco;
       stats.acuracia = stats.respondidos > 0 ? (stats.certo / stats.respondidos) * 100 : 0;
       stats.aproveitamento = stats.validos > 0 ? (stats.certo / stats.validos) * 100 : 0;
       return stats;
     }
 
-    function renderKpis(rows){
-      const s = computeStats(rows);
-      const el = document.getElementById("kpis");
-      el.innerHTML = `
-        <div class="kpi"><div class="v">${s.total}</div><div class="t">Itens (filtrados)</div></div>
-        <div class="kpi"><div class="v">${s.validos}</div><div class="t">Válidos (sem anulado)</div></div>
-        <div class="kpi"><div class="v">${s.certo}</div><div class="t">Acertos</div></div>
-        <div class="kpi"><div class="v">${s.errado}</div><div class="t">Erros</div></div>
-        <div class="kpi"><div class="v">${s.branco}</div><div class="t">Brancos</div></div>
-        <div class="kpi"><div class="v">${s.acuracia.toFixed(2)}%</div><div class="t">Acurácia (sobre respondidos)</div></div>
-      `;
-    }
-
+    // ======= FILTROS E RENDER =======
     function populateFilters(){
       const materias = uniq(data.map(d=>d.materia));
       const fMateria = document.getElementById("fMateria");
       fMateria.innerHTML = `<option value="">Todas</option>` + materias.map(m=>`<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join("");
-
-      // assunto depende de matéria; inicia com todos
       updateAssuntoOptions();
     }
 
@@ -294,7 +311,6 @@
       const fAssunto = document.getElementById("fAssunto");
       const current = fAssunto.value || "";
       fAssunto.innerHTML = `<option value="">Todos</option>` + assuntos.map(a=>`<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join("");
-      // tenta manter seleção se ainda existir
       if (assuntos.includes(current)) fAssunto.value = current;
     }
 
@@ -317,7 +333,6 @@
         });
       }
 
-      // ordenar
       rows.sort((x,y)=>{
         const vx = x[sortKey];
         const vy = y[sortKey];
@@ -342,6 +357,25 @@
       `).join("");
     }
 
+    function renderKpis(rows){
+      const s = computeStats(rows);
+      const el = document.getElementById("kpis");
+      el.innerHTML = `
+        <div class="kpi"><div class="v">${s.total}</div><div class="t">Itens (filtrados)</div></div>
+        <div class="kpi"><div class="v">${s.validos}</div><div class="t">Válidos (sem anulado)</div></div>
+        <div class="kpi"><div class="v">${s.certo}</div><div class="t">Acertos</div></div>
+        <div class="kpi"><div class="v">${s.errado}</div><div class="t">Erros</div></div>
+        <div class="kpi"><div class="v">${s.branco}</div><div class="t">Brancos</div></div>
+        <div class="kpi"><div class="v">${s.acuracia.toFixed(2)}%</div><div class="t">Acurácia (sobre respondidos)</div></div>
+      `;
+    }
+
+    function refresh(){
+      const rows = getFiltered();
+      renderKpis(rows);
+      renderTable(rows);
+    }
+
     function resetFilters(){
       document.getElementById("fMateria").value = "";
       document.getElementById("fResultado").value = "";
@@ -349,12 +383,6 @@
       updateAssuntoOptions();
       document.getElementById("fAssunto").value = "";
       refresh();
-    }
-
-    function refresh(){
-      const rows = getFiltered();
-      renderKpis(rows);
-      renderTable(rows);
     }
 
     // ======= EXPORT CSV =======
@@ -391,19 +419,20 @@
       downloadText(`relatorio-itens-${stamp}.csv`, csv, "text/csv;charset=utf-8");
     }
 
-    // ======= SEGURANÇA BÁSICA (escape) =======
-    function escapeHtml(s){
-      return String(s)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-    function csvEscape(s){
-      const v = String(s);
-      if (/[,"\n]/.test(v)) return `"${v.replaceAll('"','""')}"`;
-      return v;
+    // ======= NAVEGAÇÃO ABAS =======
+    function showPage(which){
+      const isItens = which === "itens";
+
+      document.getElementById("tabItens").classList.toggle("active", isItens);
+      document.getElementById("tabRanking").classList.toggle("active", !isItens);
+
+      document.getElementById("tabItens").setAttribute("aria-selected", String(isItens));
+      document.getElementById("tabRanking").setAttribute("aria-selected", String(!isItens));
+
+      document.getElementById("pageItens").classList.toggle("active", isItens);
+      document.getElementById("pageRanking").classList.toggle("active", !isItens);
+
+      window.scrollTo({top:0, behavior:"instant"});
     }
 
     // ======= EVENTOS =======
@@ -411,13 +440,11 @@
 
     document.getElementById("fMateria").addEventListener("change", () => {
       updateAssuntoOptions();
-      // se matéria mudou, não força reset de assunto, só re-filtra
       refresh();
     });
     document.getElementById("fAssunto").addEventListener("change", refresh);
     document.getElementById("fResultado").addEventListener("change", refresh);
     document.getElementById("qSearch").addEventListener("input", () => {
-      // debounce simples
       window.clearTimeout(window.__t);
       window.__t = window.setTimeout(refresh, 120);
     });
@@ -425,7 +452,6 @@
     document.getElementById("btnReset").addEventListener("click", resetFilters);
     document.getElementById("btnExport").addEventListener("click", exportCsv);
 
-    // Ordenação por cabeçalho
     document.querySelectorAll("thead th[data-key]").forEach(th=>{
       th.addEventListener("click", ()=>{
         const key = th.getAttribute("data-key");
@@ -434,6 +460,9 @@
         refresh();
       });
     });
+
+    document.getElementById("tabItens").addEventListener("click", ()=>showPage("itens"));
+    document.getElementById("tabRanking").addEventListener("click", ()=>showPage("ranking"));
 
     // Primeira renderização
     refresh();
