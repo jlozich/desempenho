@@ -1,0 +1,177 @@
+    function updateAssuntoOptions(){
+      const fMateriaVal = document.getElementById("fMateria").value;
+      const base = fMateriaVal ? data.filter(d=>d.materia === fMateriaVal) : data;
+      const assuntos = uniq(base.map(d=>d.assunto));
+      const fAssunto = document.getElementById("fAssunto");
+      const current = fAssunto.value || "";
+      fAssunto.innerHTML =
+        `<option value="">Todos</option>` +
+        assuntos.map(a=>`<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join("");
+      if (assuntos.includes(current)) fAssunto.value = current;
+    }
+
+    function getFiltered(){
+      const m = document.getElementById("fMateria").value;
+      const a = document.getElementById("fAssunto").value;
+      const r = document.getElementById("fResultado").value;
+      const q = document.getElementById("qSearch").value.trim().toLowerCase();
+
+      let rows = data.slice();
+
+      if (m) rows = rows.filter(d=>d.materia === m);
+      if (a) rows = rows.filter(d=>d.assunto === a);
+      if (r) rows = rows.filter(d=>d.resultado === r);
+
+      if (q){
+        rows = rows.filter(d=>{
+          const hay = `${d.q} ${d.materia} ${d.assunto} ${d.resultado}`.toLowerCase();
+          return hay.includes(q);
+        });
+      }
+
+      // ordenar
+      rows.sort((x,y)=>{
+        const vx = x[sortKey];
+        const vy = y[sortKey];
+        let cmp = 0;
+        if (typeof vx === "number" && typeof vy === "number") cmp = vx - vy;
+        else cmp = String(vx).localeCompare(String(vy),"pt-BR");
+        return sortDir === "asc" ? cmp : -cmp;
+      });
+
+      return rows;
+    }
+
+    function renderTable(rows){
+      const tbody = document.getElementById("tbody");
+      tbody.innerHTML = rows.map(d=>`
+        <tr>
+          <td><b>${d.q}</b></td>
+          <td>${escapeHtml(d.materia)}</td>
+          <td>${escapeHtml(d.assunto)}</td>
+          <td><span class="tag ${tagClass(d.resultado)}">${d.resultado}</span></td>
+        </tr>
+      `).join("");
+    }
+
+    function resetFilters(){
+      document.getElementById("fMateria").value = "";
+      document.getElementById("fResultado").value = "";
+      document.getElementById("qSearch").value = "";
+      updateAssuntoOptions();
+      document.getElementById("fAssunto").value = "";
+      refresh();
+    }
+
+    function refresh(){
+      const rows = getFiltered();
+      renderKpis(rows);
+      renderTable(rows);
+    }
+
+    // ======= EXPORT CSV =======
+    function toCsv(rows){
+      const header = ["questao","materia","assunto","resultado"];
+      const lines = [header.join(",")];
+      for(const d of rows){
+        lines.push([
+          d.q,
+          csvEscape(d.materia),
+          csvEscape(d.assunto),
+          d.resultado
+        ].join(","));
+      }
+      return lines.join("\n");
+    }
+
+    function downloadText(filename, content, mime="text/plain;charset=utf-8"){
+      const blob = new Blob([content], {type:mime});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportCsv(){
+      const rows = getFiltered();
+      const csv = toCsv(rows);
+      const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g,"-");
+      downloadText(`relatorio-itens-${stamp}.csv`, csv, "text/csv;charset=utf-8");
+    }
+
+    // ======= SEGURANÇA BÁSICA (escape) =======
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+    function csvEscape(s){
+      const v = String(s);
+      if (/[,"\n]/.test(v)) return `"${v.replaceAll('"','""')}"`;
+      return v;
+    }
+
+    // ======= NAVEGAÇÃO (2 PÁGINAS) =======
+    function showPage(which){
+      const tabItens = document.getElementById("tabItens");
+      const tabRanking = document.getElementById("tabRanking");
+      const pageItens = document.getElementById("pageItens");
+      const pageRanking = document.getElementById("pageRanking");
+
+      const isItens = which === "itens";
+      tabItens.classList.toggle("active", isItens);
+      tabRanking.classList.toggle("active", !isItens);
+
+      tabItens.setAttribute("aria-selected", String(isItens));
+      tabRanking.setAttribute("aria-selected", String(!isItens));
+
+      pageItens.classList.toggle("active", isItens);
+      pageRanking.classList.toggle("active", !isItens);
+
+      // rola para o topo quando trocar de aba
+      window.scrollTo({top:0, behavior:"instant" in window ? "instant" : "auto"});
+    }
+
+    // ======= EVENTOS =======
+    populateFilters();
+
+    document.getElementById("fMateria").addEventListener("change", () => {
+      updateAssuntoOptions();
+      refresh();
+    });
+    document.getElementById("fAssunto").addEventListener("change", refresh);
+    document.getElementById("fResultado").addEventListener("change", refresh);
+    document.getElementById("qSearch").addEventListener("input", () => {
+      window.clearTimeout(window.__t);
+      window.__t = window.setTimeout(refresh, 120);
+    });
+
+    document.getElementById("btnReset").addEventListener("click", resetFilters);
+    document.getElementById("btnExport").addEventListener("click", exportCsv);
+
+    // Ordenação por cabeçalho
+    document.querySelectorAll("thead th[data-key]").forEach(th=>{
+      th.addEventListener("click", ()=>{
+        const key = th.getAttribute("data-key");
+        if (sortKey === key) sortDir = (sortDir === "asc" ? "desc" : "asc");
+        else { sortKey = key; sortDir = "asc"; }
+        refresh();
+      });
+    });
+
+    // Troca de abas
+    document.getElementById("tabItens").addEventListener("click", ()=>showPage("itens"));
+    document.getElementById("tabRanking").addEventListener("click", ()=>showPage("ranking"));
+
+    // Primeira renderização
+    refresh();
+  </script>
+</body>
+</html>
