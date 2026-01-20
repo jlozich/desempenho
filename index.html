@@ -12,32 +12,33 @@
     h1{ margin:0 0 6px 0; font-size:18px; }
     .sub{ color:var(--muted); font-size:13px; }
     .wrap{ padding:16px; max-width:1200px; margin:0 auto; }
+
+    /* Navegação (2 páginas no mesmo arquivo) */
+    .nav{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+    .tab{ padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:#fff; cursor:pointer; font-weight:700; font-size:14px; }
+    .tab:hover{ background:#fafafa; }
+    .tab.active{ background:var(--card); }
+    .page{ display:none; }
+    .page.active{ display:block; }
+
     .controls{ display:grid; gap:10px; grid-template-columns:repeat(12,1fr); margin-bottom:14px; }
     .control{ grid-column:span 3; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px; }
     .control label{ display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
-    .control select,.control input{
-      width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#fff;
-      font-size:14px;
-    }
+    .control select,.control input{ width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#fff; font-size:14px; }
     .actions{ grid-column:span 12; display:flex; gap:10px; flex-wrap:wrap; }
-    button{
-      padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; cursor:pointer;
-      font-weight:600;
-    }
+    button{ padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:#fff; cursor:pointer; font-weight:600; }
     button:hover{ background:#fafafa; }
+
     .kpis{ display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin:14px 0 18px; }
     .kpi{ border:1px solid var(--line); border-radius:12px; padding:12px; background:#fff; }
     .kpi .v{ font-size:20px; font-weight:800; }
     .kpi .t{ font-size:12px; color:var(--muted); margin-top:4px; }
 
     table{ width:100%; border-collapse:collapse; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
-    thead th{
-      text-align:left; font-size:12px; color:var(--muted); background:var(--card);
-      padding:10px; border-bottom:1px solid var(--line);
-      cursor:pointer; user-select:none;
-    }
+    thead th{ text-align:left; font-size:12px; color:var(--muted); background:var(--card); padding:10px; border-bottom:1px solid var(--line); cursor:pointer; user-select:none; }
     tbody td{ padding:10px; border-bottom:1px solid var(--line); vertical-align:top; font-size:14px; }
     tbody tr:hover{ background:#fafafa; }
+
     .tag{ display:inline-block; padding:3px 8px; border-radius:999px; font-size:12px; font-weight:700; border:1px solid var(--line); }
     .certo{ background:#e9f7ef; border-color:#bfe7ce; }
     .errado{ background:#fdecec; border-color:#f3b9b9; }
@@ -46,9 +47,22 @@
 
     .small{ font-size:12px; color:var(--muted); }
     footer{ padding:16px; color:var(--muted); font-size:12px; }
+
+    /* Página 2 (Ranking/Diagnóstico) */
+    .card{ border:1px solid var(--line); border-radius:14px; background:#fff; padding:14px; margin:12px 0; }
+    .card h2{ margin:0 0 8px 0; font-size:16px; }
+    .card h3{ margin:14px 0 8px 0; font-size:14px; }
+    .pillrow{ display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 0; }
+    .pill{ display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; border:1px solid var(--line); background:var(--card); font-size:12px; font-weight:700; }
+    .ranklist{ margin:0; padding-left:18px; }
+    .ranklist li{ margin:10px 0; }
+    .meta{ color:var(--muted); font-size:12px; margin-top:6px; line-height:1.5; }
+    .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
     @media (max-width: 980px){
       .control{ grid-column:span 6; }
       .kpis{ grid-template-columns:repeat(3,1fr); }
+      .grid2{ grid-template-columns:1fr; }
     }
     @media (max-width: 560px){
       .control{ grid-column:span 12; }
@@ -60,57 +74,263 @@
   <header>
     <div class="wrap">
       <h1>Relatório de Desempenho – 120 itens</h1>
-      <div class="sub">Filtro por matéria/assunto/resultado + exportação CSV. (Branco não penaliza; Anulado não conta.)</div>
+      <div class="sub">Duas abas no mesmo arquivo: (1) Tabela com filtros + CSV | (2) Ranking e diagnóstico. (Branco não penaliza; Anulado não conta.)</div>
+
+      <div class="nav" role="tablist" aria-label="Navegação">
+        <button class="tab active" id="tabItens" type="button" aria-controls="pageItens" aria-selected="true">Itens (Tabela)</button>
+        <button class="tab" id="tabRanking" type="button" aria-controls="pageRanking" aria-selected="false">Ranking & Diagnóstico</button>
+      </div>
     </div>
   </header>
 
   <main class="wrap">
-    <section class="controls">
-      <div class="control">
-        <label for="fMateria">Matéria</label>
-        <select id="fMateria"></select>
-      </div>
-      <div class="control">
-        <label for="fAssunto">Assunto</label>
-        <select id="fAssunto"></select>
-      </div>
-      <div class="control">
-        <label for="fResultado">Resultado</label>
-        <select id="fResultado">
-          <option value="">Todos</option>
-          <option value="certo">certo</option>
-          <option value="errado">errado</option>
-          <option value="branco">branco</option>
-          <option value="anulado">anulado</option>
-        </select>
-      </div>
-      <div class="control">
-        <label for="qSearch">Busca (nº, matéria, assunto)</label>
-        <input id="qSearch" placeholder="ex.: Linux, 98, Direitos Humanos..." />
+
+    <!-- ======= ABA 1: ITENS ======= -->
+    <section class="page active" id="pageItens" role="tabpanel" aria-labelledby="tabItens">
+      <section class="controls">
+        <div class="control">
+          <label for="fMateria">Matéria</label>
+          <select id="fMateria"></select>
+        </div>
+        <div class="control">
+          <label for="fAssunto">Assunto</label>
+          <select id="fAssunto"></select>
+        </div>
+        <div class="control">
+          <label for="fResultado">Resultado</label>
+          <select id="fResultado">
+            <option value="">Todos</option>
+            <option value="certo">certo</option>
+            <option value="errado">errado</option>
+            <option value="branco">branco</option>
+            <option value="anulado">anulado</option>
+          </select>
+        </div>
+        <div class="control">
+          <label for="qSearch">Busca (nº, matéria, assunto)</label>
+          <input id="qSearch" placeholder="ex.: Linux, 98, Direitos Humanos..." />
+        </div>
+
+        <div class="actions">
+          <button id="btnReset" type="button">Limpar filtros</button>
+          <button id="btnExport" type="button">Exportar CSV (itens filtrados)</button>
+          <button id="btnGoRanking" type="button">📊 Ir para Ranking</button>
+        </div>
+      </section>
+
+      <section class="kpis" id="kpis"></section>
+
+      <section>
+        <div class="small" id="hintSort">Clique no cabeçalho para ordenar (alternando asc/desc).</div>
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th data-key="q">Q</th>
+              <th data-key="materia">Matéria</th>
+              <th data-key="assunto">Assunto</th>
+              <th data-key="resultado">Resultado</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </section>
+    </section>
+
+    <!-- ======= ABA 2: RANKING & DIAGNÓSTICO ======= -->
+    <section class="page" id="pageRanking" role="tabpanel" aria-labelledby="tabRanking">
+      <div class="actions" style="margin:0 0 10px 0;">
+        <button id="btnBackItens" type="button">⬅ Voltar para Itens</button>
       </div>
 
-      <div class="actions">
-        <button id="btnReset" type="button">Limpar filtros</button>
-        <button id="btnExport" type="button">Exportar CSV (itens filtrados)</button>
+      <div class="card">
+        <h2>Regras do cálculo</h2>
+        <ul class="ranklist">
+          <li><b>Itens anulados</b> foram excluídos do cálculo.</li>
+          <li><b>Brancos</b> não entram como erro nem como acerto.</li>
+          <li><b>Métrica principal</b>: % de acertos sobre o que era <b>pontuável</b> na matéria.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>🥇 Ranking geral (do melhor para o pior)</h2>
+        <ol class="ranklist">
+          <li>
+            <b>Forense Digital (incidente, nuvem e VMs) — 100%</b><br/>
+            <span class="meta">Itens válidos: 12 | Acertos: 12 | Erros: 0 | Brancos: 0</span>
+            <div class="meta"><b>Você domina muito bem:</b> cadeia de custódia; análise de incidentes; evidências em nuvem; vestígios em VMs e ransomware. <b>👉 Maior ativo técnico para o cargo.</b></div>
+          </li>
+          <li>
+            <b>Direitos Humanos — 100%</b><br/>
+            <span class="meta">Válidos: 6 | Acertos: 6 | Erros: 0 | Brancos: 0</span>
+            <div class="meta">Base jurídica sólida em tratados internacionais e STF.</div>
+          </li>
+          <li>
+            <b>Android / iOS — 100%</b><br/>
+            <span class="meta">Válidos: 2 | Acertos: 2 | Erros: 0</span>
+            <div class="meta">Boa leitura sobre sandbox, ASLR e arquitetura móvel.</div>
+          </li>
+          <li>
+            <b>Estruturas de dados, SonarQube e Complexidade — 100%</b><br/>
+            <span class="meta">Válidos: 3 | Acertos: 3</span>
+            <div class="meta">Base teórica consistente (stack, QualityGate e Big-O).</div>
+          </li>
+          <li>
+            <b>Penal (tempo e lugar do crime) — 100%</b><br/>
+            <span class="meta">Válidos: 2 | Acertos: 2</span>
+            <div class="meta">Perfeito em teoria da atividade e ubiquidade.</div>
+          </li>
+          <li>
+            <b>Windows/Excel — 100%</b><br/>
+            <span class="meta">Válidos: 2 | Acertos: 2</span>
+          </li>
+          <li>
+            <b>Criminalística (busca e cadeia de custódia) — 100%</b><br/>
+            <span class="meta">Válidos: 3 | Acertos: 3</span>
+          </li>
+          <li>
+            <b>Esteganografia — 100%</b><br/>
+            <span class="meta">Válidos: 2 | Acertos: 2</span>
+          </li>
+          <li>
+            <b>NoSQL — 66,7%</b><br/>
+            <span class="meta">Válidos: 3 | Acertos: 2 | Erros: 1 | Brancos: 1</span>
+            <div class="meta">Errou o item sobre ACID distribuído; deixou em branco grafos.</div>
+          </li>
+          <li>
+            <b>Forense Mobile — 66,7%</b><br/>
+            <span class="meta">Válidos: 3 | Acertos: 2 | Brancos: 1 (115)</span>
+            <div class="meta">Acertou cache e identificação do SO; deixou EXIF em branco.</div>
+          </li>
+          <li>
+            <b>Português (texto e coesão) — 62,5%</b><br/>
+            <span class="meta">Válidos: 8 | Acertos: 5 | Erros: 3</span>
+            <div class="meta">Compreende bem o texto, mas cai em detalhes gramaticais.</div>
+          </li>
+          <li>
+            <b>Perícia (imagem e balística) — 66,7%</b><br/>
+            <span class="meta">Válidos: 3 | Acertos: 2</span>
+            <div class="meta">Obs.: o item de sinais de disparo encostado foi anulado no gabarito.</div>
+          </li>
+          <li>
+            <b>Redação Oficial — 50%</b><br/>
+            <span class="meta">Válidos: 4 | Acertos: 2 | Erros: 2</span>
+            <div class="meta">Revisar fechos, cabeçalhos e padrão oficial.</div>
+          </li>
+          <li>
+            <b>Licitações — 50%</b><br/>
+            <span class="meta">Válidos: 2 | Acertos: 1 | Brancos: 1</span>
+            <div class="meta">Acertou inexigibilidade; deixou SRP em branco.</div>
+          </li>
+          <li>
+            <b>NAT / Redes — 50%</b><br/>
+            <span class="meta">Válidos: 2 | Acertos: 1 | Erros: 1</span>
+            <div class="meta">Errou o papel do DHCP na tradução NAT.</div>
+          </li>
+          <li>
+            <b>DNSSEC — 50%</b><br/>
+            <span class="meta">Válidos: 2 | Acertos: 1 | Brancos: 1</span>
+            <div class="meta">Deixou KSK em branco.</div>
+          </li>
+          <li>
+            <b>Criptografia (Twofish/MITM) — 50%</b><br/>
+            <span class="meta">Válidos: 2 | Acertos: 1 | Brancos: 1</span>
+            <div class="meta">Acertou MITM/DH; deixou Twofish em branco.</div>
+          </li>
+          <li>
+            <b>Engenharia Reversa — 50%</b><br/>
+            <span class="meta">Válidos: 2 | Acertos: 1 | Brancos: 1</span>
+            <div class="meta">Acertou control flow flattening; deixou ISA extension.</div>
+          </li>
+          <li>
+            <b>Bancos de Dados — 40%</b><br/>
+            <span class="meta">Válidos: 5 | Acertos: 2 | Erros: 2 | Brancos: 1</span>
+            <div class="meta">Pontos fracos: agregação (OLAP) e recuperação de falhas.</div>
+          </li>
+          <li>
+            <b>Lógica — 40%</b><br/>
+            <span class="meta">Válidos: 5 | Acertos: 2 | Erros: 3</span>
+            <div class="meta">Acertou cobertura e condicional final; errou equivalências e inferências.</div>
+          </li>
+          <li>
+            <b>Segurança da Informação / Big Data / ML — 16,7%</b><br/>
+            <span class="meta">Válidos: 6 | Acertos: 1 | Brancos: 3 | Erros: 2</span>
+            <div class="meta">Pior bloco no Básico.</div>
+          </li>
+          <li>
+            <b>Arquitetura e Memória — 0%</b><br/>
+            <span class="meta">Válidos: 4 | Acertos: 0 | Brancos: 3 | Erros: 1</span>
+            <div class="meta">Ponto mais crítico dos Específicos.</div>
+          </li>
+          <li>
+            <b>RAID / NTFS — 0%</b><br/>
+            <span class="meta">Válidos: 2 | Acertos: 0 | Erros: 2</span>
+          </li>
+          <li>
+            <b>POO e Programação Procedural — 0%</b><br/>
+            <span class="meta">Válidos: 3 | Acertos: 0 | Brancos: 1 | Erros: 2</span>
+          </li>
+          <li>
+            <b>Web e APIs — 0%</b><br/>
+            <span class="meta">Válidos: 2 | Acertos: 0 | Erros: 2</span>
+          </li>
+          <li>
+            <b>SSH/HTTPS — 0%</b><br/>
+            <span class="meta">Válidos: 2 | Acertos: 0 | Erros: 1 | Anulado: 1</span>
+          </li>
+          <li>
+            <b>WPA3 — 0%</b><br/>
+            <span class="meta">Válidos: 2 | Acertos: 0 | Erros: 2</span>
+          </li>
+          <li>
+            <b>Linux — 0%</b><br/>
+            <span class="meta">Válidos: 3 | Acertos: 0 | Brancos: 2 | Erros: 1</span>
+            <div class="meta">Permissões, systemd e dmesg: revisão urgente.</div>
+          </li>
+          <li>
+            <b>Governança de TI / Marco Civil — 0%</b><br/>
+            <span class="meta">Válidos: 2 | Acertos: 0 | Erros: 2</span>
+          </li>
+        </ol>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <h2>🎯 Diagnóstico final</h2>
+          <h3>✅ Seus superpoderes</h3>
+          <div class="pillrow">
+            <span class="pill">Forense digital prática</span>
+            <span class="pill">Direitos Humanos</span>
+            <span class="pill">Android/iOS</span>
+            <span class="pill">Cadeia de custódia</span>
+            <span class="pill">Estruturas de dados</span>
+          </div>
+
+          <h3>⚠️ Fragilidades críticas</h3>
+          <div class="pillrow">
+            <span class="pill">Arquitetura de computadores</span>
+            <span class="pill">Linux</span>
+            <span class="pill">RAID/NTFS</span>
+            <span class="pill">Segurança/Big Data</span>
+            <span class="pill">POO e programação</span>
+            <span class="pill">Web/APIs</span>
+            <span class="pill">WPA3</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Como usar no GitHub Pages</h2>
+          <ol class="ranklist">
+            <li>Crie um repositório (ex.: <b>relatorio-prova</b>).</li>
+            <li>Salve este arquivo como <b>index.html</b> na raiz.</li>
+            <li>Vá em <b>Settings → Pages</b>.</li>
+            <li>Em “Build and deployment”, escolha <b>Deploy from a branch</b>.</li>
+            <li>Selecione a branch (<b>main</b>) e a pasta (<b>/root</b>), e salve.</li>
+          </ol>
+          <div class="meta">Pronto: você terá uma URL pública com as duas abas dentro do mesmo arquivo.</div>
+        </div>
       </div>
     </section>
 
-    <section class="kpis" id="kpis"></section>
-
-    <section>
-      <div class="small" id="hintSort">Clique no cabeçalho para ordenar (alternando asc/desc).</div>
-      <table id="tbl">
-        <thead>
-          <tr>
-            <th data-key="q">Q</th>
-            <th data-key="materia">Matéria</th>
-            <th data-key="assunto">Assunto</th>
-            <th data-key="resultado">Resultado</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </section>
   </main>
 
   <footer class="wrap">
@@ -120,7 +340,6 @@
   <script>
     // ======= DADOS (120 itens) =======
     // Resultado: "certo" | "errado" | "branco" | "anulado"
-    // Obs.: este dataset segue a tabela que montamos anteriormente.
     const data = [
       {q:1, materia:"Português", assunto:"Interpretação de texto", resultado:"certo"},
       {q:2, materia:"Português", assunto:"Interpretação de texto", resultado:"certo"},
@@ -255,9 +474,7 @@
 
     function computeStats(rows){
       const stats = { total: rows.length, certo:0, errado:0, branco:0, anulado:0, validos:0, respondidos:0 };
-      for(const r of rows){
-        stats[r.resultado] = (stats[r.resultado]||0) + 1;
-      }
+      for(const r of rows){ stats[r.resultado] = (stats[r.resultado]||0) + 1; }
       stats.validos = stats.total - stats.anulado;
       stats.respondidos = stats.validos - stats.branco; // branco não respondido
       stats.acuracia = stats.respondidos > 0 ? (stats.certo / stats.respondidos) * 100 : 0;
@@ -282,8 +499,6 @@
       const materias = uniq(data.map(d=>d.materia));
       const fMateria = document.getElementById("fMateria");
       fMateria.innerHTML = `<option value="">Todas</option>` + materias.map(m=>`<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join("");
-
-      // assunto depende de matéria; inicia com todos
       updateAssuntoOptions();
     }
 
@@ -294,7 +509,6 @@
       const fAssunto = document.getElementById("fAssunto");
       const current = fAssunto.value || "";
       fAssunto.innerHTML = `<option value="">Todos</option>` + assuntos.map(a=>`<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join("");
-      // tenta manter seleção se ainda existir
       if (assuntos.includes(current)) fAssunto.value = current;
     }
 
@@ -305,7 +519,6 @@
       const q = document.getElementById("qSearch").value.trim().toLowerCase();
 
       let rows = data.slice();
-
       if (m) rows = rows.filter(d=>d.materia === m);
       if (a) rows = rows.filter(d=>d.assunto === a);
       if (r) rows = rows.filter(d=>d.resultado === r);
@@ -317,7 +530,6 @@
         });
       }
 
-      // ordenar
       rows.sort((x,y)=>{
         const vx = x[sortKey];
         const vy = y[sortKey];
@@ -406,18 +618,33 @@
       return v;
     }
 
+    // ======= NAVEGAÇÃO (abas) =======
+    function showPage(which){
+      const tabItens = document.getElementById("tabItens");
+      const tabRanking = document.getElementById("tabRanking");
+      const pageItens = document.getElementById("pageItens");
+      const pageRanking = document.getElementById("pageRanking");
+
+      const isItens = which === "itens";
+      tabItens.classList.toggle("active", isItens);
+      tabRanking.classList.toggle("active", !isItens);
+
+      tabItens.setAttribute("aria-selected", String(isItens));
+      tabRanking.setAttribute("aria-selected", String(!isItens));
+
+      pageItens.classList.toggle("active", isItens);
+      pageRanking.classList.toggle("active", !isItens);
+
+      window.scrollTo({top:0, behavior:"auto"});
+    }
+
     // ======= EVENTOS =======
     populateFilters();
 
-    document.getElementById("fMateria").addEventListener("change", () => {
-      updateAssuntoOptions();
-      // se matéria mudou, não força reset de assunto, só re-filtra
-      refresh();
-    });
+    document.getElementById("fMateria").addEventListener("change", () => { updateAssuntoOptions(); refresh(); });
     document.getElementById("fAssunto").addEventListener("change", refresh);
     document.getElementById("fResultado").addEventListener("change", refresh);
     document.getElementById("qSearch").addEventListener("input", () => {
-      // debounce simples
       window.clearTimeout(window.__t);
       window.__t = window.setTimeout(refresh, 120);
     });
@@ -425,7 +652,6 @@
     document.getElementById("btnReset").addEventListener("click", resetFilters);
     document.getElementById("btnExport").addEventListener("click", exportCsv);
 
-    // Ordenação por cabeçalho
     document.querySelectorAll("thead th[data-key]").forEach(th=>{
       th.addEventListener("click", ()=>{
         const key = th.getAttribute("data-key");
@@ -435,7 +661,11 @@
       });
     });
 
-    // Primeira renderização
+    document.getElementById("tabItens").addEventListener("click", ()=>showPage("itens"));
+    document.getElementById("tabRanking").addEventListener("click", ()=>showPage("ranking"));
+    document.getElementById("btnGoRanking").addEventListener("click", ()=>showPage("ranking"));
+    document.getElementById("btnBackItens").addEventListener("click", ()=>showPage("itens"));
+
     refresh();
   </script>
 </body>
